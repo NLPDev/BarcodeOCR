@@ -56,6 +56,7 @@ def display(im, decodedObjects):
 
     # Display results
     cv2.imshow("Results", im);
+    cv2.imwrite("out.jpg", im)
     cv2.waitKey(0);
 
 
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         im = cv2.imread(sys.argv[1])
 
         decodedObjects = decode(im)
-        # display(im, decodedObjects)
+        display(im, decodedObjects)
 
         row=['1', 'fasd']
         list=row
