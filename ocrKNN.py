@@ -58,29 +58,38 @@ while(True):
 
     ret2, frame = cv2.threshold(frame, 127, 255, cv2.THRESH_BINARY)
 
-    # src.create(rows, cols, CV_8UC1);
-    # src = imread(your - file, CV_8UC1);
-
-
-    # source_thresh = cv2.adaptiveThreshold(frame, 255, 0, 1, 5, 2)
     frame = cv2.adaptiveThreshold(frame, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
     filter = cv2.createBackgroundSubtractorMOG2()
     frame = filter.apply(frame)
 
-    # frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
     frame = cv2.bitwise_not(frame, cv2.COLOR_GRAY2RGB)
     im2, contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(frame, contours, 2, (0, 255, 0), 3)
 
-    cv2.imshow('thresh', frame)
+    # cv2.imshow('thresh', frame)
 
-    test_img = cv2.resize(frame, (20, 20))
-    x = np.array(test_img)
-    test_img = x.reshape(-1, 400).astype(np.float32)
-    ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
+    # test_img = cv2.resize(frame, (20, 20))
+    # x = np.array(test_img)
+    # test_img = x.reshape(-1, 400).astype(np.float32)
+    # ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
     # Print the predicted number
-    print(int(result[0]))
+    # print(int(result[0]))
+
+    # print(result)
+
+    digits={}
+
+    for (i, c) in enumerate(contours):
+        (x, y, w, h)=cv2.boundingRect(c)
+        roi=frame[y:y+h, x:x+w]
+        roi=cv2.resize(roi, (57, 88))
+        digits[i]=roi
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        cv2.imshow('thresh', frame)
+
+
+
 
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -89,14 +98,3 @@ while(True):
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
-
-
-#
-# test_img = cv2.imread("test.jpg")
-# test_img = cv2.cvtColor(test_img, cv2.COLOR_BGR2GRAY)
-# test_img = cv2.resize(test_img, (20, 20))
-# x = np.array(test_img)
-# test_img = x.reshape(-1, 400).astype(np.float32)
-# ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
-# # Print the predicted number
-# print(int(result))
