@@ -72,27 +72,55 @@ while(True):
     # test_img = cv2.resize(frame, (20, 20))
     # x = np.array(test_img)
     # test_img = x.reshape(-1, 400).astype(np.float32)
-    # ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
-    # Print the predicted number
-    # print(int(result[0]))
-
-    # print(result)
+    # ret, result, neighbours, dist = knn.findNearest(test_img, k=10)
+    # # Print the predicted number
+    # # print(int(result[0]))
+    #
+    # print(result.ravel())
+    # break
 
     digits={}
+    locs=[]
+    groupOutput=[]
+    output=[]
 
     for (i, c) in enumerate(contours):
         (x, y, w, h)=cv2.boundingRect(c)
         roi=frame[y:y+h, x:x+w]
         roi=cv2.resize(roi, (57, 88))
         digits[i]=roi
+
+        locs.append((x, y, w, h))
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
         cv2.imshow('thresh', frame)
 
-
-
+        # scores = []
+        #
+        # test_img = cv2.resize(roi, (20, 20))
+        # x = np.array(test_img)
+        # test_img = x.reshape(-1, 400).astype(np.float32)
+        # ret, result, neighbours, dist = knn.findNearest(test_img, k=10)
+        # # Print the predicted number
+        # # print(int(result[0]))
+        #
+        # print(result.ravel())
+        #
+        # # loop over the reference digit name and digit ROI
+        # for (digit, digitROI) in digits.items():
+        #     # apply correlation-based template matching, take the
+        #     # score, and update the scores list
+        #     result = cv2.matchTemplate(roi, digitROI,
+        #                                cv2.TM_CCOEFF)
+        #     (_, score, _, _) = cv2.minMaxLoc(result)
+        #     scores.append(score)
+        #
+        # # the classification for the digit ROI will be the reference
+        # # digit name with the *largest* template matching score
+        # groupOutput.append(str(np.argmax(scores)))
 
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        # print("Result: {}".format("".join(output)))
         break
 
 # When everything done, release the capture
