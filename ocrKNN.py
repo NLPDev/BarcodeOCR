@@ -53,6 +53,7 @@ while(True):
 
     # Our operations on the frame come here
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    numf=frame
 
     # Display the resulting frame
 
@@ -91,13 +92,13 @@ while(True):
         for (i, c) in enumerate(contours):
 
             (x, y, w, h) = cv2.boundingRect(c)
-            roi = frame[y:y + h, x:x + w]
+            roi = numf[y:y + h, x:x + w]
 
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-            res="out"+str(i)+".jpg"
-            cv2.imwrite(res, roi)
+            # res="out"+str(i)+".jpg"
+            # cv2.imwrite(res, roi)
 
 
 
@@ -109,6 +110,7 @@ while(True):
             ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
 
             print(i)
+            # print(pytesseract.image_to_string(roi))
 
             print(result[0])
 
