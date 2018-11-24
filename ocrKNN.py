@@ -51,9 +51,11 @@ while(True):
     # Capture frame-by-frame
     ret1, frame = cap.read()
 
+    numf = frame
+
     # Our operations on the frame come here
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    numf=frame
+
 
     # Display the resulting frame
 
@@ -76,23 +78,55 @@ while(True):
     output=[]
     out=np.zeros(frame.shape, np.uint8)
 
+    rects = [cv2.boundingRect(ctr) for ctr in contours]
 
-    for (i, c) in enumerate(contours):
-        (x, y, w, h)=cv2.boundingRect(c)
-        roi=frame[y:y+h, x:x+w]
+    for rect in rects:
+        # Draw the rectangles
 
-        locs.append((x, y, w, h))
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        cv2.rectangle(numf, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+        # Make the rectangular region around the digit
+
+        roi = frame[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
+
+        scores = []
+
+        test_img = cv2.resize(roi, (20, 20))
+        x = np.array(test_img)
+        test_img = x.reshape(-1, 400).astype(np.float32)
+        ret, result, neighbqours, dist = knn.findNearest(test_img, k=5)
 
 
-        cv2.imshow('thresh', frame)
+        cv2.putText(numf, str(int(result[0][0])), (rect[0], rect[1]), cv2.FONT_HERSHEY_DUPLEX, 2.0, (0, 0, 255), 3)
+
+        cv2.imshow('thresh', numf)
+
+
+    # for (i, c) in enumerate(contours):
+    #     (x, y, w, h)=cv2.boundingRect(c)
+    #     roi=frame[y:y+h, x:x+w]
+    #
+    #     locs.append((x, y, w, h))
+    #     cv2.rectangle(numf, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    #
+    #     scores = []
+    #
+    #     test_img = cv2.resize(roi, (20, 20))
+    #     x = np.array(test_img)
+    #     test_img = x.reshape(-1, 400).astype(np.float32)
+    #     ret, result, neighbqours, dist = knn.findNearest(test_img, k=5)
+    #     print(x[0])
+    #
+    #     cv2.putText(numf, str(int(result[0][0])), (55, 55), cv2.FONT_HERSHEY_DUPLEX, 2.0, (0, 0, 255), 3)
+    #
+    #
+    #     cv2.imshow('thresh', numf)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         # print("Result: {}".format("".join(output)))
         for (i, c) in enumerate(contours):
 
             (x, y, w, h) = cv2.boundingRect(c)
-            roi = numf[y:y + h, x:x + w]
+            roi = frame[y:y + h, x:x + w]
 
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -107,12 +141,12 @@ while(True):
             test_img = cv2.resize(roi, (20, 20))
             x = np.array(test_img)
             test_img = x.reshape(-1, 400).astype(np.float32)
-            ret, result, neighbours, dist = knn.findNearest(test_img, k=1)
+            ret, result, neighbours, dist = knn.findNearest(test_img, k=5)
 
-            print(i)
+            # print(i)
             # print(pytesseract.image_to_string(roi))
 
-            print(result[0])
+            print(int(result[0][0]))
 
 
         break
